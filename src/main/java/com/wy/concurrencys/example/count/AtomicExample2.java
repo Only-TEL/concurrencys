@@ -1,25 +1,26 @@
-package com.wy.concurrencys;
+package com.wy.concurrencys.example.count;
 
 
-import com.wy.concurrencys.annotations.NotThreadSafe;
+import com.wy.concurrencys.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * 测试线程安全的类
- */
-@NotThreadSafe
-public class ConcurrencyTest {
+@ThreadSafe
+public class AtomicExample2 {
 
-    private static Logger logger = LoggerFactory.getLogger(ConcurrencyTest.class);
+    private static Logger logger = LoggerFactory.getLogger(AtomicExample2.class);
     // 请求总数
     private static int clientTotal = 1000;
     // 每次请求的线程数
     private static int threadTotal = 50;
-    // 计数器
-    private static int count = 0;
+    // 计数器使用AtomicLong
+    private static AtomicLong count = new AtomicLong(0);
 
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -44,11 +45,16 @@ public class ConcurrencyTest {
         }
         // 关闭线程池
         executorService.shutdown();
-        // 很少出现1000，原因在于add方法中的操作不是一个原子操作，线程不安全
+        /**
+         * 一直是1000与AtomicInteger结果相同
+         */
         logger.info("\ncount="+count);
 
     }
     public static void add(){
-        count++;
+        // 先get在自增
+        count.getAndIncrement();
+        // 先自增在get
+        // count.incrementAndGet();
     }
 }

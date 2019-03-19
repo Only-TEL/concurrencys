@@ -1,35 +1,36 @@
-package com.wy.concurrencys;
+package com.wy.concurrencys.example.count;
 
-
-import com.wy.concurrencys.annotations.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 测试线程安全的类
+ * 如何让一段代码只执行一次AtomicBoolean
  */
-@NotThreadSafe
-public class ConcurrencyTest {
+public class AtomicBooleanTest {
 
-    private static Logger logger = LoggerFactory.getLogger(ConcurrencyTest.class);
+    private static AtomicBoolean isHappened = new AtomicBoolean(false);
+    private static Logger logger = LoggerFactory.getLogger(AtomicBooleanTest.class);
     // 请求总数
     private static int clientTotal = 1000;
     // 每次请求的线程数
     private static int threadTotal = 50;
-    // 计数器
-    private static int count = 0;
 
     public static void main(String[] args) {
-        ExecutorService executorService = Executors.newCachedThreadPool();
+        ExecutorService executorService =
+                new ThreadPoolExecutor(threadTotal,
+                        threadTotal*2,
+                        60,TimeUnit.SECONDS,
+                        new LinkedBlockingQueue<>());
         final Semaphore semaphore = new Semaphore(threadTotal);
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
         for(int i=0;i<clientTotal;i++){
             executorService.execute(() -> {
                 try {
                     semaphore.acquire();
-                    add();
+                    test();
                     semaphore.release();
                 }catch (Exception ex){
                     logger.error("线程操作错误");
@@ -44,11 +45,11 @@ public class ConcurrencyTest {
         }
         // 关闭线程池
         executorService.shutdown();
-        // 很少出现1000，原因在于add方法中的操作不是一个原子操作，线程不安全
-        logger.info("\ncount="+count);
+    }
+    private static void test(){
+        if(isHappened.compareAndSet(false,true)){
+            logger.info("execute");
+        }
+    }
 
-    }
-    public static void add(){
-        count++;
-    }
 }
