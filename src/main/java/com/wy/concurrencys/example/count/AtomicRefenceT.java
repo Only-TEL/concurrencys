@@ -3,6 +3,15 @@ package com.wy.concurrencys.example.count;
 import com.wy.concurrencys.annotations.ThreadSafe;
 
 import java.util.concurrent.atomic.AtomicReference;
+
+/**
+ * AtomicReference只是提供了少量的原子操作：compareAndSet getAndSet
+ * 都是对AtomicReference内部引用进行原子操作
+ * 并不能保证对内部引用属性的原子操作
+ * 如果需要实现--> AtomicReferenceFieldUpdater<T,V>
+ *      T - 持有可更新字段的对象的类型
+ *      V - 字段的类型
+ */
 @ThreadSafe
 public class AtomicRefenceT {
 
