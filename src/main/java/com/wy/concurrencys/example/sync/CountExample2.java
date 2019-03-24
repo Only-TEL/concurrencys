@@ -2,8 +2,7 @@ package com.wy.concurrencys.example.sync;
 
 
 import com.wy.concurrencys.annotations.ThreadSafe;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -11,9 +10,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 @ThreadSafe
+@Slf4j
 public class CountExample2 {
 
-    private static Logger logger = LoggerFactory.getLogger(CountExample2.class);
     // 请求总数
     private static int clientTotal = 1000;
     // 每次请求的线程数
@@ -32,7 +31,7 @@ public class CountExample2 {
                     add();
                     semaphore.release();
                 }catch (Exception ex){
-                    logger.error("线程操作错误");
+                    log.error("线程操作错误");
                 }
                 countDownLatch.countDown();
             });
@@ -40,12 +39,12 @@ public class CountExample2 {
         try{
             countDownLatch.await();
         }catch (Exception e){
-            logger.error("计数器释放错误");
+            log.error("计数器释放错误");
         }
         // 关闭线程池
         executorService.shutdown();
 
-        logger.info("\ncount="+count);
+        log.info("\ncount={}",count);
 
     }
     public synchronized static void add(){

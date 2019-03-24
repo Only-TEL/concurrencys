@@ -1,7 +1,6 @@
 package com.wy.concurrencys.example.count;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -9,10 +8,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 如何让一段代码只执行一次AtomicBoolean
  */
+@Slf4j
 public class AtomicBooleanTest {
 
     private static AtomicBoolean isHappened = new AtomicBoolean(false);
-    private static Logger logger = LoggerFactory.getLogger(AtomicBooleanTest.class);
     // 请求总数
     private static int clientTotal = 1000;
     // 每次请求的线程数
@@ -33,7 +32,7 @@ public class AtomicBooleanTest {
                     test();
                     semaphore.release();
                 }catch (Exception ex){
-                    logger.error("线程操作错误");
+                    log.error("线程操作错误");
                 }
                 countDownLatch.countDown();
             });
@@ -41,14 +40,14 @@ public class AtomicBooleanTest {
         try{
             countDownLatch.await();
         }catch (Exception e){
-            logger.error("计数器释放错误");
+            log.error("计数器释放错误");
         }
         // 关闭线程池
         executorService.shutdown();
     }
     private static void test(){
         if(isHappened.compareAndSet(false,true)){
-            logger.info("execute");
+            log.info("execute");
         }
     }
 

@@ -2,8 +2,7 @@ package com.wy.concurrencys;
 
 
 import com.wy.concurrencys.annotations.NotThreadSafe;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
 
@@ -11,9 +10,9 @@ import java.util.concurrent.*;
  * 测试线程安全的类
  */
 @NotThreadSafe
+@Slf4j
 public class ConcurrencyTest {
 
-    private static Logger logger = LoggerFactory.getLogger(ConcurrencyTest.class);
     // 请求总数
     private static int clientTotal = 1000;
     // 每次请求的线程数
@@ -32,7 +31,7 @@ public class ConcurrencyTest {
                     add();
                     semaphore.release();
                 }catch (Exception ex){
-                    logger.error("线程操作错误");
+                    log.error("线程操作错误",ex);
                 }
                 countDownLatch.countDown();
             });
@@ -40,12 +39,12 @@ public class ConcurrencyTest {
         try{
             countDownLatch.await();
         }catch (Exception e){
-            logger.error("计数器释放错误");
+            log.error("计数器释放错误",e);
         }
         // 关闭线程池
         executorService.shutdown();
         // 很少出现1000，原因在于add方法中的操作不是一个原子操作，线程不安全
-        logger.info("\ncount="+count);
+        log.info("\ncount={}",count);
 
     }
     public static void add(){

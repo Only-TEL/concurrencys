@@ -1,6 +1,7 @@
 package com.wy.concurrencys.example.count;
 
 import com.wy.concurrencys.annotations.ThreadSafe;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *      V - 字段的类型
  */
 @ThreadSafe
+@Slf4j
 public class AtomicRefenceT {
 
     public static AtomicReference<Integer> ar = new AtomicReference<>(0);
@@ -23,7 +25,7 @@ public class AtomicRefenceT {
         ar.compareAndSet(1,3);
         ar.compareAndSet(2,4);
         ar.compareAndSet(3,5);
-        System.out.println("count="+ar.get());
+        log.info("count={}",ar.get());
     }
 
 }

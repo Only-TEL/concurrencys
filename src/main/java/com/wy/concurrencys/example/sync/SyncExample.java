@@ -1,5 +1,7 @@
 package com.wy.concurrencys.example.sync;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.*;
 
 /**
@@ -7,20 +9,21 @@ import java.util.concurrent.*;
  * synchronized关键字在子类不重写该方法时会被继承
  * 如果子类重写了该方法，如需同步则需要加synchronized关键字，不然不会同步执行
  */
+@Slf4j
 public class SyncExample {
 
     // 修饰代码块
     public void test1(int j){
         synchronized(this){
             for(int i=0;i<10;i++){
-                System.out.println("test1-->i="+i+",j="+j);
+                log.info("test1-->i={},j={}",i,j);
             }
         }
     }
     // 修饰一个方法
     public synchronized void test2(int j){
         for(int i=0;i<10;i++){
-            System.out.println("test2-->i="+i+",j="+j);
+            log.info("test2-->i={},j={}",i,j);
         }
     }
 

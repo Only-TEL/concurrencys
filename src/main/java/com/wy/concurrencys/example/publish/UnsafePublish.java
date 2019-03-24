@@ -1,7 +1,9 @@
 package com.wy.concurrencys.example.publish;
 
-import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+@Slf4j
 public class UnsafePublish {
 
     private String[] state = {"A","B","C"};
@@ -13,11 +15,10 @@ public class UnsafePublish {
     public static void main(String[] args) {
 
         UnsafePublish unsafePublish = new UnsafePublish();
-        System.out.println("state=> "+ Arrays.toString(unsafePublish.getState()));
-        System.out.println("\n-------------------------------------------------\n");
+        log.info("state=> {}", Arrays.toString(unsafePublish.getState()));
         // 不安全的发布state内部的对象
         unsafePublish.getState()[0] = "D";
-        System.out.println("state=> "+ Arrays.toString(unsafePublish.getState()));
+        log.info("state=> {}", Arrays.toString(unsafePublish.getState()));
     }
 
 }

@@ -1,7 +1,6 @@
 package com.wy.concurrencys.example.count;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,9 +11,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 解决方法：AtomicStampedReference
  *  每次更新会带上一个版本号
  */
+@Slf4j
 public class ABAQuestion {
 
-    private static Logger logger = LoggerFactory.getLogger(ABAQuestion.class);
     private static AtomicInteger atomicInteger = new AtomicInteger(100);
 
     public static void main(String[] args) throws Exception{
@@ -22,9 +21,9 @@ public class ABAQuestion {
             @Override
             public void run() {
                 atomicInteger.compareAndSet(100,101);
-                logger.info("thread intT1 value="+atomicInteger.get());
+                log.info("thread intT1 value={}",atomicInteger.get());
                 atomicInteger.compareAndSet(101,100);
-                logger.info("thread intT1 value="+atomicInteger.get());
+                log.info("thread intT1 value={}",atomicInteger.get());
             }
         });
 
@@ -37,7 +36,7 @@ public class ABAQuestion {
                     ie.printStackTrace();
                 }
                 boolean flag = atomicInteger.compareAndSet(100,101);
-                logger.info("thread intT2 value="+atomicInteger.get()+",thread 2 update is"+flag);
+                log.info("thread intT2 value={},thread 2 update is {}",atomicInteger.get(),flag);
             }
         });
 

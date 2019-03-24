@@ -37,8 +37,19 @@
     2.将对象的引用保存在volatile域或者AtomicReference对象中
     3.将对象的引用保存到某个final类型的域中
     4.将对象的引用保存到一个有锁保护的域中
+##不可变对象 String
+   + 对象创建之后其状态就不能修改
+   + 对象所有的域都是final
+   + 对象在创建期间，this引用没有溢出
+##线程封闭
+   - threadLocal:threadLocal在服务器携带数据
+   - 数据库连接池
+##线程不安全的类
+   * StringBuilder与StringBuffer
+   * SimpleDateFormat与JodaTime
+   * ArrayList、HashSet、HashMap
+   * 同步容器Vector、Stack与HashTable(key与value都不能为null)
     
-
 
 
 

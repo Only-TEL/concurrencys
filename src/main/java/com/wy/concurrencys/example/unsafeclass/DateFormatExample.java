@@ -1,25 +1,32 @@
-package com.wy.concurrencys.example.count;
+package com.wy.concurrencys.example.unsafeclass;
 
-
-import com.wy.concurrencys.annotations.ThreadSafe;
+import com.wy.concurrencys.annotations.NotThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicLong;
 
-@ThreadSafe
 @Slf4j
-public class AtomicExample2 {
+@NotThreadSafe
+public class DateFormatExample {
 
     // 请求总数
-    private static int clientTotal = 1000;
+    private static int clientTotal = 5000;
     // 每次请求的线程数
     private static int threadTotal = 50;
-    // 计数器使用AtomicLong
-    private static AtomicLong count = new AtomicLong(0);
+
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+    //使用threadLocal来保证SimpleDateFormat的安全性
+    private static ThreadLocal<DateFormat> dateFormatHolder = new ThreadLocal(){
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd");
+        }
+    };
 
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -29,7 +36,7 @@ public class AtomicExample2 {
             executorService.execute(() -> {
                 try {
                     semaphore.acquire();
-                    add();
+                    update();
                     semaphore.release();
                 }catch (Exception ex){
                     log.error("线程操作错误");
@@ -44,16 +51,13 @@ public class AtomicExample2 {
         }
         // 关闭线程池
         executorService.shutdown();
-        /**
-         * 一直是1000与AtomicInteger结果相同
-         */
-        log.info("\ncount={}",count);
-
     }
-    public static void add(){
-        // 先get在自增
-        count.getAndIncrement();
-        // 先自增在get
-        // count.incrementAndGet();
+    public static void update(){
+        try{
+            // SimpleDateFormat在多线程下共享使用就会出现线程不安全情况
+            simpleDateFormat.format("20190303");
+        }catch(Exception e){
+            log.error("parse error");
+        }
     }
 }

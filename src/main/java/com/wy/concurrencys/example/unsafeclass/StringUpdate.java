@@ -1,25 +1,22 @@
-package com.wy.concurrencys.example.count;
+package com.wy.concurrencys.example.unsafeclass;
 
-
-import com.wy.concurrencys.annotations.ThreadSafe;
+import com.wy.concurrencys.annotations.NotThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicLong;
-
-@ThreadSafe
+@NotThreadSafe
 @Slf4j
-public class AtomicExample2 {
+public class StringUpdate {
 
     // 请求总数
-    private static int clientTotal = 1000;
+    private static int clientTotal = 5000;
     // 每次请求的线程数
     private static int threadTotal = 50;
-    // 计数器使用AtomicLong
-    private static AtomicLong count = new AtomicLong(0);
+    // StringBuffer
+    private static StringBuilder builder = new StringBuilder();
 
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -29,7 +26,7 @@ public class AtomicExample2 {
             executorService.execute(() -> {
                 try {
                     semaphore.acquire();
-                    add();
+                    update();
                     semaphore.release();
                 }catch (Exception ex){
                     log.error("线程操作错误");
@@ -44,16 +41,9 @@ public class AtomicExample2 {
         }
         // 关闭线程池
         executorService.shutdown();
-        /**
-         * 一直是1000与AtomicInteger结果相同
-         */
-        log.info("\ncount={}",count);
-
+        log.info("size={}",builder.length());
     }
-    public static void add(){
-        // 先get在自增
-        count.getAndIncrement();
-        // 先自增在get
-        // count.incrementAndGet();
+    public static void update(){
+        builder.append("A");
     }
 }

@@ -2,8 +2,7 @@ package com.wy.concurrencys.example.count;
 
 
 import com.wy.concurrencys.annotations.ThreadSafe;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -12,9 +11,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ThreadSafe
+@Slf4j
 public class CountExample1 {
 
-    private static Logger logger = LoggerFactory.getLogger(CountExample1.class);
     // 请求总数
     private static int clientTotal = 1000;
     // 每次请求的线程数
@@ -33,7 +32,7 @@ public class CountExample1 {
                     add();
                     semaphore.release();
                 }catch (Exception ex){
-                    logger.error("线程操作错误");
+                    log.error("线程操作错误");
                 }
                 countDownLatch.countDown();
             });
@@ -41,7 +40,7 @@ public class CountExample1 {
         try{
             countDownLatch.await();
         }catch (Exception e){
-            logger.error("计数器释放错误");
+            log.error("计数器释放错误");
         }
         // 关闭线程池
         executorService.shutdown();
@@ -49,7 +48,7 @@ public class CountExample1 {
          * 一直是1000，原因在于add方法中的count是AtomicInteger类型
          * 它的自增操作在底层保证原子性 ---> CAS(Compare And Swap)
          */
-        logger.info("\ncount="+count);
+        log.info("\ncount={}",count);
 
     }
     public static void add(){

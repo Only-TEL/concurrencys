@@ -10,4 +10,5 @@ public class ConcurrencysApplication {
         SpringApplication.run(ConcurrencysApplication.class, args);
     }
 
+
 }
