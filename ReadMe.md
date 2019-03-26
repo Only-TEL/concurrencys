@@ -33,10 +33,10 @@
     7. 线程终结规则：线程中所有的操作都先行发生于线程的终止检测，我们可以通过Thread.join()方法结束、Thread.isAlive()的返回值手段检测到线程已经终止执行
     8. 对象终结规则：一个对象的初始化完成先行发生于他的finalize()方法的开始  
 ##安全发布对象的四种方式
-    1.静态初始化函数中初始化一个对象的引用
-    2.将对象的引用保存在volatile域或者AtomicReference对象中
-    3.将对象的引用保存到某个final类型的域中
-    4.将对象的引用保存到一个有锁保护的域中
+   1.静态初始化函数中初始化一个对象的引用
+   2.将对象的引用保存在volatile域或者AtomicReference对象中
+   3.将对象的引用保存到某个final类型的域中
+   4.将对象的引用保存到一个有锁保护的域中
 ##不可变对象 String
    + 对象创建之后其状态就不能修改
    + 对象所有的域都是final
@@ -48,8 +48,27 @@
    * StringBuilder与StringBuffer
    * SimpleDateFormat与JodaTime
    * ArrayList、HashSet、HashMap
-   * 同步容器Vector、Stack与HashTable(key与value都不能为null)
-    
-
-
-
+##同步容器
+   1. Vector、Stack
+   2. HashTable(key与value都不能为null)
+   3. Collections.synchronizedList(List<>)
+   4. Collections.synchronizedSet(Set<>)
+   5. Collections.synchronizedMap(Map<>)
+   6. 集合元素的删除问题
+##并发容器
+   - ArrayList -> CopyOnWriteArrayList
+   > CopyOnWriteArrayList在写操作时，复制原数组，如果原数组内容较多，可能导致yong gc或者full gc  
+   > 不适用于实时读取的场景，适合读多写少的环境
+   > 设计思想：读写分离、数据最终一致性、开辟新空间解决并发冲突
+   - HashSet、TreeSet -> CopyOnWriteArraySet、ConcurrentSkipListSet
+   - HashMap、TreeMap -> ConcurrentHashMap、ConcurrentSkipListMap
+   > ConcurrentSkipListSet是基于ConcurrentSkipListMap实现的，内部是使用SkipList(跳表)结构实现的
+   > ConcurrentSkipListMap的key有序，支持的并发比ConcurrentHashMap高，并发越高相比于ConcurrentHashMap优势越大
+##安全共享策略
+   1. 线程限制：一个被线程限制的对象，只允许占有它的线程修改它
+   2. 共享只读：一个共享只对的对象，在没有额外同步的情况下，可以被多个线程读取，但是不能被修改
+   3. 线程安全对象：在内部通过同步机制来保证线程安全，其他线程无需额外的同步就可以通过公共接口随意访问它
+   4. 被守护对象：被守护对象只能通过获取特定的锁来访问
+   
+   
+   
